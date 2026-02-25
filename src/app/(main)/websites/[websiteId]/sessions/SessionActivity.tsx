@@ -42,33 +42,46 @@ export function SessionActivity({
   return (
     <LoadingPanel data={data} isLoading={isLoading} error={error}>
       <Column gap>
-        {data?.map(({ eventId, createdAt, urlPath, eventName, visitId, hasData }) => {
-          const showHeader = !lastDay || !isSameDay(new Date(lastDay), new Date(createdAt));
-          lastDay = createdAt;
+        {data?.map(
+          ({
+            eventId,
+            createdAt,
+            urlPath,
+            eventName,
+            visitId,
+            hasData,
+            referrerDomain,
+            referrerPath,
+            referrerQuery,
+          }) => {
+            const showHeader = !lastDay || !isSameDay(new Date(lastDay), new Date(createdAt));
+            lastDay = createdAt;
 
-          return (
-            <Column key={eventId} gap>
-              {showHeader && <Heading size="1">{formatTimezoneDate(createdAt, 'PPPP')}</Heading>}
-              <Row alignItems="center" gap="6" height="40px">
-                <StatusLight color={`#${visitId?.substring(0, 6)}`}>
-                  <Text wrap="nowrap">{formatTimezoneDate(createdAt, 'pp')}</Text>
-                </StatusLight>
-                <Row alignItems="center" gap="2">
-                  <Icon>{eventName ? <Lightning /> : <Eye />}</Icon>
-                  <Text wrap="nowrap">
-                    {eventName
-                      ? formatMessage(labels.triggeredEvent)
-                      : formatMessage(labels.viewedPage)}
-                  </Text>
-                  <Text weight="bold" style={{ maxWidth: isMobile ? '400px' : null }} truncate>
-                    {eventName || urlPath}
-                  </Text>
-                  {hasData > 0 && <PropertiesButton websiteId={websiteId} eventId={eventId} />}
+            return (
+              <Column key={eventId} gap>
+                {showHeader && <Heading size="1">{formatTimezoneDate(createdAt, 'PPPP')}</Heading>}
+                <Row alignItems="center" gap="6" height="40px">
+                  <StatusLight color={`#${visitId?.substring(0, 6)}`}>
+                    <Text wrap="nowrap">{formatTimezoneDate(createdAt, 'pp')}</Text>
+                  </StatusLight>
+                  <Row alignItems="center" gap="2">
+                    <Icon>{eventName ? <Lightning /> : <Eye />}</Icon>
+                    <Text wrap="nowrap">
+                      {eventName
+                        ? formatMessage(labels.triggeredEvent)
+                        : formatMessage(labels.viewedPage)}
+                    </Text>
+                    <Text weight="bold" style={{ maxWidth: isMobile ? '400px' : null }} truncate>
+                      {eventName || urlPath}{' '}
+                      {eventName ? '' : `${referrerDomain}:${referrerPath}:${referrerQuery}`}
+                    </Text>
+                    {hasData > 0 && <PropertiesButton websiteId={websiteId} eventId={eventId} />}
+                  </Row>
                 </Row>
-              </Row>
-            </Column>
-          );
-        })}
+              </Column>
+            );
+          },
+        )}
       </Column>
     </LoadingPanel>
   );

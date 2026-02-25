@@ -25,11 +25,13 @@ async function relationalQuery(websiteId: string, sessionId: string, filters: Qu
       url_path as "urlPath",
       url_query as "urlQuery",
       referrer_domain as "referrerDomain",
+      referrer_path as "referrerPath",
+      referrer_query as "referrerQuery",
       event_id as "eventId",
       event_type as "eventType",
       event_name as "eventName",
       visit_id as "visitId",
-      event_id IN (select website_event_id 
+      event_id IN (select website_event_id
                    from event_data
                    where website_id = {{websiteId::uuid}}
                       and created_at between {{startDate}} and {{endDate}}) AS "hasData"
@@ -56,18 +58,20 @@ async function clickhouseQuery(websiteId: string, sessionId: string, filters: Qu
       url_path as urlPath,
       url_query as urlQuery,
       referrer_domain as referrerDomain,
+      referrer_path as referrerPath,
+      referrer_query as referrerQuery,
       event_id as eventId,
       event_type as eventType,
       event_name as eventName,
       visit_id as visitId,
-      event_id IN (select event_id 
-                   from event_data 
-                   where website_id = {websiteId:UUID} 
+      event_id IN (select event_id
+                   from event_data
+                   where website_id = {websiteId:UUID}
                     and session_id = {sessionId:UUID}
                     and created_at between {startDate:DateTime64} and {endDate:DateTime64}) AS hasData
     from website_event
     where website_id = {websiteId:UUID}
-      and session_id = {sessionId:UUID} 
+      and session_id = {sessionId:UUID}
       and created_at between {startDate:DateTime64} and {endDate:DateTime64}
     order by created_at desc
     limit 500
